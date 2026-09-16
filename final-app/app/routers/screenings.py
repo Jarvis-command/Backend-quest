@@ -12,14 +12,14 @@ from app.common import idempotency
 from app.db.unit_of_work import UnitOfWork
 from app.dependencies import (
     CursorPagination,
-    get_cursor_pagination,
     get_current_user,
+    get_cursor_pagination,
     get_db_session,
     get_idempotency_key,
     get_progress_manager,
+    get_uow,
     require_role,
 )
-from app.dependencies import get_uow
 from app.models.user import User
 from app.schemas.screening import (
     ScreeningCreate,
@@ -86,9 +86,9 @@ async def list_screenings(
 async def get_screening(
     screening_id: UUID,
     user: User = Depends(get_current_user),
-    uow: UnitOfWork = Depends(get_uow),
+    db: AsyncSession = Depends(get_db_session),
 ):
-    return await service.get_screening(uow, screening_id=screening_id, user=user)
+    return await service.get_screening(db, screening_id=screening_id, user=user)
 
 
 @router.get("/{screening_id}/progress")
